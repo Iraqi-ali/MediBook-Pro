@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        value: "mongodb+srv://alilazim2005_db_user:<PASSWORD>@cluster0.tc96wxl.mongodb.net/medibook?retryWrites=true&w=majority"
+        value: "mongodb+srv://alilazim2005_db_user:Sxe5bSfVkEdd8pWd@cluster0.tc96wxl.mongodb.net/medibook?retryWrites=true&w=majority"
       - key: JWT_SECRET
         value: "ChangeThisSecret"
       - key: CLIENT_URL
