@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: medical-platform
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        fromService:
+          name: medical-platform
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
