@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Container, Typography, Grid, Card, CardContent, Button } from '@mui/material';
 import ClinicMap from '../components/ClinicMap';
@@ -42,7 +43,12 @@ export default function HomePage() {
                 <Typography color="text.secondary" sx={{ mb: 1.5 }}>
                   تصفية حسب التخصص، نوع الخدمة، أو المسافة من موقعك.
                 </Typography>
-                <Button variant="contained" size="large" sx={{ mt: 2 }}>ابحث الآن</Button>
+                <Button variant="contained" size="large" sx={{ mt: 2, mr: 2 }}>
+                  ابحث الآن
+                </Button>
+                <Button component={Link} to="/register" variant="outlined" size="large" sx={{ mt: 2 }}>
+                  تسجيل عيادة جديدة
+                </Button>
               </CardContent>
             </Card>
             <Card sx={{ p: 2, borderRadius: 4, boxShadow: 4 }}>
