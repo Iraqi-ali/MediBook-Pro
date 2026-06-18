@@ -17,6 +17,14 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'MediBook Pro API' }));
+// Friendly root route so visiting the service root doesn't return "Cannot GET /"
+app.get('/', (req, res) => {
+  const clientUrl = process.env.CLIENT_URL;
+  if (clientUrl) {
+    return res.send(`MediBook Pro API running. Frontend: <a href="${clientUrl}">${clientUrl}</a>`);
+  }
+  return res.send('MediBook Pro API running. Use the /api routes.');
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/clinics', clinicRoutes);
 app.use('/api/appointments', appointmentRoutes);
@@ -28,6 +36,6 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Backend running on port ${PORT}`);
 });
