@@ -11,11 +11,11 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        value: <YOUR_MONGO_URI>
+        value: "mongodb+srv://alilazim2005_db_user:<PASSWORD>@cluster0.tc96wxl.mongodb.net/medibook?retryWrites=true&w=majority"
       - key: JWT_SECRET
-        value: <YOUR_JWT_SECRET>
+        value: "ChangeThisSecret"
       - key: CLIENT_URL
-        value: https://<YOUR_FRONTEND_SERVICE>.onrender.com
+        value: "https://medibook-pro-frontend.onrender.com"
   - type: static
     name: medibook-pro-frontend
     region: oregon
