@@ -12,7 +12,20 @@ dotenv.config();
 const app = express();
 
 connectDB();
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'https://medibook-pro-frontend.onrender.com',
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error('منع CORS: origin غير مسموح'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
