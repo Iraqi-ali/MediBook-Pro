@@ -15,7 +15,7 @@ services:
       - key: JWT_SECRET
         value: "ChangeThisSecret"
       - key: CLIENT_URL
-        value: ""
+        value: "https://medibook-pro-frontend.onrender.com"
   - type: static
     name: medibook-pro-frontend
     region: oregon
