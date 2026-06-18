@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: medibook-pro-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        value: <YOUR_MONGO_URI>
+      - key: JWT_SECRET
+        value: <YOUR_JWT_SECRET>
+      - key: CLIENT_URL
+        value: https://medibook-pro.onrender.com
+  - type: static
+    name: medibook-pro-frontend
+    region: oregon
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
