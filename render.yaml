@@ -4,8 +4,9 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    rootDirectory: backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,10 +15,14 @@ services:
       - key: JWT_SECRET
         value: <YOUR_JWT_SECRET>
       - key: CLIENT_URL
-        value: https://medibook-pro.onrender.com
+        value: https://<YOUR_FRONTEND_SERVICE>.onrender.com
   - type: static
     name: medibook-pro-frontend
     region: oregon
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    rootDirectory: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://<YOUR_BACKEND_SERVICE>.onrender.com/api
