@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_USER
+  PATIENT
+  DOCTOR
+  CLINIC
+  PHARMACY
+}
+
+enum FacilityType {
+  HOSPITAL
+  CLINIC
+  DENTAL_CLINIC
+  PHARMACY
+  MEDICAL_CENTER
+  SPECIALTY_CENTER
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(PATIENT)
+  firstName String
+  lastName  String
+  phone     String?
+  age       Int?
+  gender    String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  patientProfile PatientProfile?
+  doctorProfile  DoctorProfile?
+  clinicProfile  ClinicProfile?
+  pharmacyProfile PharmacyProfile?
+  
+  appointments Appointment[] @relation("PatientAppointments")
+  comments     Comment[]
+  
+  @@map("users")
+}
+
+model PatientProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalHistory Json?
+  bloodType      String?
+  allergies      String[]
+  chronicDiseases String[]
+  emergencyContact String?
+  insuranceInfo  String?
+  latitude       Float?
+  longitude      Float?
+  address        String?
+  city           String?
+  country        String   @default("Iraq")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  appointments Appointment[]
+  
+  @@map("patient_profiles")
+}
+
+model DoctorProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty     String
+  licenseNumber String   @unique
+  experience    Int?
+  bio           String?
+  consultationFee Decimal?
+  avatar        String?
+  isAvailable   Boolean  @default(true)
+  latitude      Float?
+  longitude     Float?
+  address       String?
+  city          String?
+  country       String   @default("Iraq")
+  workingHours  Json?
+  socialMedia   Json?
+  rating        Float    @default(0.0)
+  reviewCount   Int      @default(0)
+  clinicId      String?
+  clinic        ClinicProfile? @relation(fields: [clinicId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  appointments Appointment[]
+  prescriptions Prescription[]
+  comments      Comment[]
+  
+  @@map("doctor_profiles")
+}
+
+model ClinicProfile {
+  id          String        @id @default(uuid())
+  userId      String        @unique
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  type        FacilityType  @default(CLINIC)
+  description String?
+  specialty   String[]
+  logo        String?
+  coverImage  String?
+  images      Json?
+  isAvailable Boolean       @default(true)
+  latitude    Float?
+  longitude   Float?
+  address     String?
+  city        String?
+  country     String        @default("Iraq")
+  phone       String?
+  email       String?
+  website     String?
+  socialMedia Json?
+  workingHours Json?
+  services    Json?
+  rating      Float         @default(0.0)
+  reviewCount Int           @default(0)
+  advertisement Boolean     @default(false)
+  featured    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  doctors     DoctorProfile[]
+  appointments Appointment[]
+  comments    Comment[]
+  
+  @@map("clinic_profiles")
+}
+
+model PharmacyProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  licenseNumber String @unique
+  description String?
+  logo        String?
+  isAvailable Boolean  @default(true)
+  latitude    Float?
+  longitude   Float?
+  address     String?
+  city        String?
+  country     String   @default("Iraq")
+  phone       String?
+  email       String?
+  workingHours Json?
+  services    Json?
+  deliveryAvailable Boolean @default(false)
+  rating      Float    @default(0.0)
+  reviewCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  prescriptions Prescription[]
+  comments      Comment[]
+  
+  @@map("pharmacy_profiles")
+}
+
+model Appointment {
+  id          String            @id @default(uuid())
+  patientId   String
+  patient     PatientProfile    @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String?
+  doctor      DoctorProfile?    @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  clinicId    String?
+  clinic      ClinicProfile?    @relation(fields: [clinicId], references: [id], onDelete: SetNull)
+  dateTime    DateTime
+  duration    Int               @default(30)
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  reason      String?
+  followUp    Boolean           @default(false)
+  prescription Prescription?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  
+  @@map("appointments")
+}
+
+model Prescription {
+  id            String   @id @default(uuid())
+  appointmentId String   @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctorId      String
+  doctor        DoctorProfile @relation(fields: [doctorId], references: [id])
+  pharmacyId    String?
+  pharmacy      PharmacyProfile? @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
+  medications   Json
+  instructions  String?
+  validUntil    DateTime?
+  isFilled      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("prescriptions")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetId  String
+  targetType String
+  content   String
+  rating    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("comments")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  
+  @@map("notifications")
+}
